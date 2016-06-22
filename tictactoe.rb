@@ -8,6 +8,7 @@ end
 
 class Board 
   attr_reader :board, :player_1, :player_2
+  attr_accessor :turns
 
   def initialize(player1, player2)
     puts ""
@@ -16,6 +17,8 @@ class Board
 
     @board = Array.new
     9.times { @board << " " }
+
+    @turns = 1
 
     sample_board
     show_board
@@ -46,13 +49,12 @@ class Board
   end
 
   def play
-    turns=1
-    while turns < 10
-      player = turns.odd? ? player_1 : player_2
+    while @turns < 10
+      player = @turns.odd? ? player_1 : player_2
       puts ""
       puts "Player #{player.marker}'s turn."
       put_marker(player.marker)
-      turns += 1 if !end_game?
+      @turns += 1 if !end_game?
     end  
   end
 
@@ -104,11 +106,26 @@ class Board
       puts "It's a draw!"
     end
 
-    abort('Thanks for playing!') if all_done?
+    new_game? if all_done?
   end
 
   def all_done?
     win?(@player_1) || win?(@player_2) || (draw? && !win?(player_1) && !win?(player_2))
+  end
+
+  def new_game?
+    puts "Do you want play again? Yes or no?"
+    new_game = gets.chomp
+    case new_game
+    when "Yes", "yes", "Y", "y"
+      game = Board.new(Player.new("X"), Player.new("O"))
+      game.play
+    when "No", "no", "N", "n"
+      abort("Thanks for playing!")
+    else
+      puts "Answer is invalid!"
+      new_game?
+    end  
   end
 end
 
